@@ -1,99 +1,63 @@
-// Толық 2D анимациялық сайт (HTML + Express.js + ffmpeg + TTS)
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+    background-color: #f4f4f4;
+}
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const path = require('path');
-const fs = require('fs');
-const multer = require('multer');
-const { exec } = require('child_process');
-const gTTS = require('gtts');
-const app = express();
-const port = 3000;
+.container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    background: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
 
-app.use(express.static('public'));
-app.use(bodyParser.json());
+textarea {
+    width: 100%;
+    height: 100px;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
 
-const upload = multer({ dest: 'public/uploads/' });
+input {
+    margin: 10px 0;
+}
 
-// Ертегіні қабылдау және өңдеу
-app.post('/submit', upload.single('background'), (req, res) => {
-    const story = req.body.story;
-    console.log('Қабылданған ертегі:', story);
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
 
-    const audioPath = 'public/audio.mp3';
-    const tts = new gTTS(story, 'kk');
-    tts.save(audioPath, (err) => {
-        if (err) {
-            console.error('TTS қатесі:', err);
-            return res.status(500).json({ error: 'Аудио жасау сәтсіз аяқталды' });
-        }
+button:hover {
+    background: #218838;
+}
 
-        const backgroundPath = req.file ? req.file.path : 'public/default.jpg';
-        const videoPath = 'public/video.mp4';
-        const cmd = `ffmpeg -loop 1 -i ${backgroundPath} -i ${audioPath} -c:v libx264 -tune stillimage -c:a aac -b:a 192k -shortest ${videoPath}`;
-        exec(cmd, (error) => {
-            if (error) {
-                console.error('FFmpeg қатесі:', error);
-                return res.status(500).json({ error: 'Видео жасау сәтсіз аяқталды' });
-            }
-            res.json({ message: 'Ертегі қабылданды! Видео дайын!', videoUrl: '/video.mp4' });
-        });
-    });
-});
+video {
+    width: 100%;
+    margin-top: 20px;
+    border-radius: 5px;
+}
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+a {
+    display: block;
+    margin-top: 10px;
+    font-size: 16px;
+    color: white;
+    background: #007bff;
+    padding: 10px;
+    text-decoration: none;
+    border-radius: 5px;
+}
 
-app.listen(port, () => {
-    console.log(`Сервер http://localhost:${port} адресінде іске қосылды`);
-});
-
-// 2. Фронтенд (public/index.html)
-//   <html>
-//   <head>
-//       <title>2D Анимациялық сайт</title>
-//       <style>
-//           body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-//           textarea, input { width: 80%; margin: 10px 0; }
-//           button { padding: 10px 20px; font-size: 16px; }
-//       </style>
-//       <script>
-//       function sendStory() {
-//           const story = document.getElementById('story').value;
-//           const formData = new FormData();
-//           formData.append('story', story);
-//           const background = document.getElementById('background').files[0];
-//           if (background) {
-//               formData.append('background', background);
-//           }
-//           fetch('/submit', {
-//               method: 'POST',
-//               body: formData
-//           })
-//           .then(response => response.json())
-//           .then(data => {
-//               alert(data.message);
-//               if (data.videoUrl) {
-//                   document.getElementById('videoContainer').innerHTML = `<video controls src='${data.videoUrl}'></video>`;
-//                   document.getElementById('downloadButton').style.display = 'block';
-//                   document.getElementById('downloadButton').href = data.videoUrl;
-//               }
-//           })
-//           .catch(error => console.error('Қате:', error));
-//       }
-//       </script>
-//   </head>
-//   <body>
-//       <h1>Ертегіңді енгіз</h1>
-//       <textarea id='story' placeholder='Ертегіңді осында жаз...'></textarea>
-//       <br>
-//       <input type='file' id='background' accept='image/*'>
-//       <br>
-//       <button onclick='sendStory()'>Жіберу</button>
-//       <br><br>
-//       <div id='videoContainer'></div>
-//       <br>
-//       <a id='downloadButton' style='display:none;' download='video.mp4'>Жүктеу</a>
-//   </body>
-//   </html>
+a:hover {
+    background: #0056b3;
+}
