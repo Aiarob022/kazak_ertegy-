@@ -15,6 +15,14 @@ app.use(bodyParser.json());
 
 const upload = multer({ dest: 'public/uploads/' });
 
+// Фондық суреттер тізімі
+const backgrounds = [
+    'public/img/forest.jpg',
+    'public/img/castle.jpg',
+    'public/img/mountain.jpg',
+    'public/img/default.jpg'
+];
+
 // Ертегіні қабылдау және өңдеу
 app.post('/submit', upload.single('background'), (req, res) => {
     const story = req.body.story;
@@ -28,7 +36,7 @@ app.post('/submit', upload.single('background'), (req, res) => {
             return res.status(500).json({ error: 'Аудио жасау сәтсіз аяқталды' });
         }
 
-        const backgroundPath = req.file ? req.file.path : 'public/default.jpg';
+        const backgroundPath = req.file ? req.file.path : backgrounds[Math.floor(Math.random() * backgrounds.length)];
         const videoPath = 'public/video.mp4';
         const cmd = `ffmpeg -loop 1 -i ${backgroundPath} -i ${audioPath} -c:v libx264 -tune stillimage -c:a aac -b:a 192k -shortest ${videoPath}`;
         exec(cmd, (error) => {
@@ -63,10 +71,6 @@ app.listen(port, () => {
 //           const story = document.getElementById('story').value;
 //           const formData = new FormData();
 //           formData.append('story', story);
-//           const background = document.getElementById('background').files[0];
-//           if (background) {
-//               formData.append('background', background);
-//           }
 //           fetch('/submit', {
 //               method: 'POST',
 //               body: formData
@@ -87,8 +91,6 @@ app.listen(port, () => {
 //   <body>
 //       <h1>Ертегіңді енгіз</h1>
 //       <textarea id='story' placeholder='Ертегіңді осында жаз...'></textarea>
-//       <br>
-//       <input type='file' id='background' accept='image/*'>
 //       <br>
 //       <button onclick='sendStory()'>Жіберу</button>
 //       <br><br>
